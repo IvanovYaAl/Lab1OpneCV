@@ -12,14 +12,16 @@ def convolution(data: np.ndarray, kernels: np.ndarray) -> np.ndarray:
     kernels_count, kernel_channels, kernel_height, kernel_width = kernels.shape
     result = np.zeros(shape=(kernels_count, data_height, data_width))
 
+    print("h: ", kernel_height," w: ", kernel_width)
+    print("kernels: ", kernels_count, " data_height: ", data_height," data_width: ", data_width)
     assert (data_channels == kernel_channels)
     for kernel in range(kernels_count):
-        for y in range(data_height):
-            for x in range(data_width):
-                for i in range(-kernel_height // 2, kernel_height // 2):
-                    for j in range(-kernel_width // 2, kernel_width // 2):
+        for y in range(1, data_height - 1):
+            for x in range(1, data_width - 1):
+                for i in range(-1, 2):
+                    for j in range(-1, 2):
                         for k in range(data_channels):
-                            result[kernel, y, x] += data[k, max(y + i, 0), min(x + i, data_width - 1)] * kernels[kernel, k, i, j]
+                            result[kernel, y, x] += data[k, y + i, x + j] * kernels[kernel, k, i, j]
     return result
 
 
@@ -76,13 +78,13 @@ if __name__ == '__main__':
     
     data = convolution(data, np.random.rand(5, 3, 3, 3))
     print("Convolution shape ",'Shape: {}'.format(data.shape))
-    
+
     data = normalize(data, np.random.uniform(2, 8, data.shape), np.random.uniform(2, 8, data.shape))
     print("Normalize shape ",'Shape: {}'.format(data.shape))
-    
+
     data = max_pooling(data)
     print("Max pooling shape ",'Shape: {}'.format(data.shape))
-    
+
     data = softmax(data)
     print("Prediction shape ",'Shape: {}'.format(data.shape))
     
